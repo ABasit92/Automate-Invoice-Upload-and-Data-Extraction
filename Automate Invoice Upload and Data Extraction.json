@@ -1,0 +1,444 @@
+{
+  "name": "Task 2",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Invoice Upload ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Invoice",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -736,
+        480
+      ],
+      "id": "6f0b3bf9-a184-4c0d-bca5-039a9f643b0f",
+      "name": "On form submission",
+      "webhookId": "08760a19-3cb2-4bfd-8a33-2e3f1072effb"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        16,
+        416
+      ],
+      "id": "6c311dcf-703e-4516-9c27-1ac1b509cdc5",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=##Task\n\nUsing the input provided in '{{ $json.text }}', extract and return a clean JSON object with the following structure:\n\n''''json\n{\n  \"Invoice Number\": \"\",\n  \"Customer Name\": \"\",\n  \"Invoice Date\": \"\",\n  \"Total Amount\": \"\",\n  \"Due Date (if available)\":\n}\n\n\n\n "
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        272,
+        416
+      ],
+      "id": "91098775-7064-4b1d-8e8a-58c7ed9da866",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "IXRyLjlaWlk48Aq0",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1EdaQqB5xe7AHJdswx3Ve_XMY-3na_THL",
+          "mode": "list",
+          "cachedResultName": "Test Data Invoices",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1EdaQqB5xe7AHJdswx3Ve_XMY-3na_THL"
+        },
+        "event": "watchFolderUpdated"
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        288
+      ],
+      "id": "5c5dbdce-ce98-40db-80f2-69b0363df142",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XNb7FS80yeBBgBAJ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Automate Invoice Upload and Data Extraction",
+        "height": 80,
+        "width": 544,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "d088ac5c-3739-4c8b-89aa-205c159c0c5f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "Invoice",
+        "name": "Invoice",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1IQYJb5DtkhQflx2kh43toeDUQ5BZYMBy",
+          "mode": "list",
+          "cachedResultName": "Invoices",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1IQYJb5DtkhQflx2kh43toeDUQ5BZYMBy"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -288,
+        496
+      ],
+      "id": "7d402391-5bfb-4cd6-ad94-166e6c8e1af1",
+      "name": "Upload to Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XNb7FS80yeBBgBAJ",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Invoice",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        304
+      ],
+      "id": "17786a65-44c4-4baa-9cdd-956443e74f0f",
+      "name": "Extract PDF Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DLnilAC-D79w5Y6JW5nJKWDC4DI0H9SoNiG18_8vPrw",
+          "mode": "list",
+          "cachedResultName": "Invoice Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DLnilAC-D79w5Y6JW5nJKWDC4DI0H9SoNiG18_8vPrw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DLnilAC-D79w5Y6JW5nJKWDC4DI0H9SoNiG18_8vPrw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Invoice Number": "={{ $json.message.content['Invoice Number'] }}",
+            "Customer Name": "={{ $json.message.content['Customer Name'] }}",
+            "Invoice Date": "={{ $json.message.content['Invoice Date'] }}",
+            "Total Amount": "={{ $json.message.content['Total Amount'] }}",
+            "Due Date": "={{ $json.message.content['Due Date (if available)'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Invoice Date",
+              "displayName": "Invoice Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Amount",
+              "displayName": "Total Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        416
+      ],
+      "id": "57571d2b-f141-4ae5-9095-11f2dd4dfbbc",
+      "name": "Update Invoice Data in Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "v2VXpXm6BPN2ub5p",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Starts the workflow when a user uploads an invoice file via a form.",
+        "height": 80,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        624
+      ],
+      "id": "ec61c8cd-e7ee-40f2-89bb-da684208823c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Uploads the uploaded invoice file into Google Drive (“Invoices” folder).",
+        "height": 80,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        656
+      ],
+      "id": "7f59de88-63ef-4bb8-be50-0dbac9dd2ca6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Extracts text from the uploaded PDF invoice.",
+        "height": 80,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        208
+      ],
+      "id": "d25a5343-78b5-43a6-9a3f-0ab272b01a64",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "Uses GPT (gpt-4o-mini) to parse extracted text.\n\nPrompt: Extract structured fields → Invoice Number, Customer Name, Invoice Date, Total Amount, Due Date.",
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        240
+      ],
+      "id": "b70575d4-05ff-4ef8-b248-dab4a31413bc",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "Appends the extracted invoice data as a new row in Google Sheet “Invoice Data → Sheet1”.",
+        "height": 80,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        656,
+        320
+      ],
+      "id": "7c4699b4-493a-466f-85a0-eb86a306716a",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "By WatchFolder getsthe uploaded invoice file from drive.",
+        "height": 80,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        192
+      ],
+      "id": "50d2676a-1bad-4288-b78d-1fa9c34cd09e",
+      "name": "Sticky Note6"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Update Invoice Data in Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Drive": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract PDF Data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "93f880f2-4fa2-4be3-a11c-343a0a7dd198",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f7137e24afad1336d5940e35fe4582051d3443118b53239982c51eb30049a61d"
+  },
+  "id": "VCMf4IKqniiDpTjM",
+  "tags": []
+}
